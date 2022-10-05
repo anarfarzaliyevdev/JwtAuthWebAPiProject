@@ -3,6 +3,8 @@ using JwtAuthWebAPiProject.Abstractions;
 using JwtAuthWebAPiProject.DbContexts;
 using JwtAuthWebAPiProject.DTOs;
 using JwtAuthWebAPiProject.Models;
+using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace JwtAuthWebAPiProject.Repositories
 {
@@ -32,24 +34,44 @@ namespace JwtAuthWebAPiProject.Repositories
         }
 
 
-        public Task<Employee> Delete(Employee employee)
+        public async Task<Employee> Delete(int employeeId)
         {
-            throw new NotImplementedException();
+            var employee = await _appDbContext.Employees
+                   .FirstOrDefaultAsync(e=>e.Id==employeeId);
+            if (employee != null)
+            {
+                employee.IsDeleted = true;
+                await _appDbContext.SaveChangesAsync();
+                return employee;
+            }
+            return null;
         }
 
-        public Task<List<Employee>> GetAll()
+        public async Task<List<Employee>> GetAll()
         {
-            throw new NotImplementedException();
+            return await _appDbContext.Employees.ToListAsync();
         }
 
-        public Task<Employee> GetById(int id)
+        public async Task<Employee> GetById(int id)
         {
-            throw new NotImplementedException();
+            return await _appDbContext.Employees
+                  .FirstOrDefaultAsync(e =>e.Id == id);
         }
 
-        public Task<Employee> Update(Employee employee)
+        public async Task<Employee> Update(UpdateEmployeeInputModel updateEmployeeInputModel)
         {
-            throw new NotImplementedException();
+            var employee = await _appDbContext.Employees
+                .FirstOrDefaultAsync(e =>e.Id == updateEmployeeInputModel.Id);
+            if (employee != null)
+            {
+              
+               _mapper.Map(updateEmployeeInputModel,employee);
+                employee.ModifiedDate = DateTime.Now;
+                await _appDbContext.SaveChangesAsync();
+
+                return employee;
+            }
+            return null;
         }
     }
 }

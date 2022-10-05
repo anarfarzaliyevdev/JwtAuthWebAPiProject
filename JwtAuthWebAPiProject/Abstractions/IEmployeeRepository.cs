@@ -8,8 +8,8 @@ namespace JwtAuthWebAPiProject.Abstractions
         Task<List<Employee>> GetAll();
         Task<Employee> GetById(int id);
         Task<Employee> Create(CreateEmployeeInputModel createEmployeeInputModel);
-        Task<Employee> Update(Employee employee);
-        Task<Employee> Delete(Employee employee);
+        Task<Employee> Update(UpdateEmployeeInputModel employee);
+        Task<Employee> Delete(int employeeId);
         
     }
 }

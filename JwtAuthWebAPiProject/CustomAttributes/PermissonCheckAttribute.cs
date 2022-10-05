@@ -30,11 +30,23 @@ namespace JwtAuthWebAPiProject.CustomAttributes
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            var claimName = _claim.Value;
+            //var permissionName = _claim.Value;
+            var permissionNames=_claim.Value.Split(',').ToList();
             _memoryCache.TryGetValue("UserEmail",out string userEmail);
-            var permissions = _memoryCache.TryGetValue("Permissions", out List<Permisson> pers);
+            var permissions = _memoryCache.TryGetValue("Permissions", out List<Permisson> userPermissions);
+
+            //var hasClaim = pers.Any(p=>p.Name== permissionName);
+            var hasClaim = false;
+            if (permissionNames != null)
+            {
+                foreach (var per in permissionNames)
+                {
+                    hasClaim = userPermissions.Any(p => p.Name == per);
+                    if (hasClaim)
+                        break;
+                }
+            }
             
-            var hasClaim = pers.Any(p=>p.Name==claimName);
             if (!hasClaim)
             {
                 context.Result = new ForbidResult();
