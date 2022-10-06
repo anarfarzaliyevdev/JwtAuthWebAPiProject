@@ -23,7 +23,7 @@ namespace JwtAuthWebAPiProject.Controllers
             _memoryCache = memoryCache;
         }
         [HttpPost]
-        public async Task<ActionResult<string>> Login(LoginInputModel loginInputModel)
+        public async Task<ActionResult<TokenOutputModel>> Login(LoginInputModel loginInputModel)
         {
             var user =await _userRepository.GetUser(loginInputModel.Email);
           
@@ -36,7 +36,7 @@ namespace JwtAuthWebAPiProject.Controllers
                 return NotFound("Username or password is not correct");
             }
 
-            string token = _authRepository.CreateToken(user);
+            TokenOutputModel token = _authRepository.CreateToken(user);
             
             //_memoryCache.Set("UserEmail", user.Email);
             //_memoryCache.Set("Permissions", user.Permissions);

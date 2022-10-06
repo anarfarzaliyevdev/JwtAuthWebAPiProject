@@ -1,4 +1,5 @@
-﻿using JwtAuthWebAPiProject.Models;
+﻿using JwtAuthWebAPiProject.DTOs;
+using JwtAuthWebAPiProject.Models;
 
 namespace JwtAuthWebAPiProject.Services
 {
@@ -6,7 +7,7 @@ namespace JwtAuthWebAPiProject.Services
     {
 
         bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt);
-        string CreateToken(User user);
+        TokenOutputModel CreateToken(User user);
         void CreatePaswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt);
     }
 }

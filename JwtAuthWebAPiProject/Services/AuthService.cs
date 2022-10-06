@@ -1,4 +1,5 @@
-﻿using JwtAuthWebAPiProject.Models;
+﻿using JwtAuthWebAPiProject.DTOs;
+using JwtAuthWebAPiProject.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -24,7 +25,7 @@ namespace JwtAuthWebAPiProject.Services
                 return computedHash.SequenceEqual(passwordHash);
             }
         }
-        public string CreateToken(User user)
+        public TokenOutputModel CreateToken(User user)
         {
             var claims = new[] {
                         new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]),
@@ -36,14 +37,18 @@ namespace JwtAuthWebAPiProject.Services
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expireDate = DateTime.UtcNow.AddMinutes(10);
             var token = new JwtSecurityToken(
                 _configuration["Jwt:Issuer"],
                 _configuration["Jwt:Audience"],
                 claims,
-                expires: DateTime.UtcNow.AddMinutes(10),
+                expires: expireDate,
                 signingCredentials: signIn);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            TokenOutputModel tokenOutputModel = new TokenOutputModel();
+            tokenOutputModel.Token = new JwtSecurityTokenHandler().WriteToken(token);
+            tokenOutputModel.ExpireDate = expireDate;
+            tokenOutputModel.UserId = user.Id;
+            return tokenOutputModel;
         }
         public  void CreatePaswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
