@@ -8,6 +8,7 @@ using System.Security.Claims;
 
 namespace JwtAuthWebAPiProject.CustomAttributes
 {
+    
     public class PermissonCheckAttribute : TypeFilterAttribute
     {
         public PermissonCheckAttribute(string claimValue) : base(typeof(PermissionCheckFilter))
@@ -42,7 +43,7 @@ namespace JwtAuthWebAPiProject.CustomAttributes
             var isUserPermissionsCached = _memoryCache.TryGetValue(userEmail, out List<Permisson> userPermissions);
             if (!isUserPermissionsCached)
             {
-                var userPermissionsFromDb = _userRepository.GetUser(userEmail).Result.Permissions;
+                var userPermissionsFromDb = _userRepository.GetUserAsync(userEmail).Result.Permissions;
                 _memoryCache.Set(userEmail, userPermissionsFromDb);
                 userPermissions = userPermissionsFromDb;
             }

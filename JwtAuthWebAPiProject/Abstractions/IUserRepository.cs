@@ -5,8 +5,8 @@ namespace JwtAuthWebAPiProject.Abstractions
 {
     public interface IUserRepository
     {
-        Task<User> Create(CreateUserInputModel createUserInputModel);
-        Task<User> GetUser(string email);
+        Task<User> CreateAsync(CreateUserInputModel createUserInputModel);
+        Task<User> GetUserAsync(string email);
         Task<List<User>> GetUsers();
     }
 }

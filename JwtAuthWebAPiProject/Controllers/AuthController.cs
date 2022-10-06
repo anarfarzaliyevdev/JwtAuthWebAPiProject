@@ -25,7 +25,7 @@ namespace JwtAuthWebAPiProject.Controllers
         [HttpPost]
         public async Task<ActionResult<TokenOutputModel>> Login(LoginInputModel loginInputModel)
         {
-            var user =await _userRepository.GetUser(loginInputModel.Email);
+            var user =await _userRepository.GetUserAsync(loginInputModel.Email);
           
             if(user == null)
             {

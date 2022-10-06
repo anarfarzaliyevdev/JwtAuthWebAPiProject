@@ -2,7 +2,7 @@
 using JwtAuthWebAPiProject.Abstractions;
 using JwtAuthWebAPiProject.DbContexts;
 using JwtAuthWebAPiProject.DTOs;
-using JwtAuthWebAPiProject.Extensions;
+
 using JwtAuthWebAPiProject.Models;
 using JwtAuthWebAPiProject.Services;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +24,7 @@ namespace JwtAuthWebAPiProject.Repositories
         }
 
 
-        public async Task<User> Create(CreateUserInputModel createUserInputModel)
+        public async Task<User> CreateAsync(CreateUserInputModel createUserInputModel)
         {
             var user = _mapper.Map<User>(createUserInputModel);
             user.CreatedDate = DateTime.Now;
@@ -41,7 +41,7 @@ namespace JwtAuthWebAPiProject.Repositories
         }
         
 
-        public async Task<User> GetUser(string email)
+        public async Task<User> GetUserAsync(string email)
         {
             var user=await _appDbContext.Users.Include(u => u.Permissions).FirstOrDefaultAsync(u=>u.Email==email);
             return user;
