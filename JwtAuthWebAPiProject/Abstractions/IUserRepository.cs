@@ -7,6 +7,6 @@ namespace JwtAuthWebAPiProject.Abstractions
     {
         Task<User> CreateAsync(CreateUserInputModel createUserInputModel);
         Task<User> GetUserAsync(string email);
-        Task<List<User>> GetUsers();
+        Task<List<User>> GetUsersAsync();
     }
 }

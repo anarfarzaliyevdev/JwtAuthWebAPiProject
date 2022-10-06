@@ -47,7 +47,7 @@ namespace JwtAuthWebAPiProject.Repositories
             return user;
         }
 
-        public async Task<List<User>> GetUsers()
+        public async Task<List<User>> GetUsersAsync()
         {
 
             return await _appDbContext.Users.Include(u => u.Permissions).ToListAsync();
