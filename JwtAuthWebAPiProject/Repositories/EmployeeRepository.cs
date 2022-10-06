@@ -18,7 +18,7 @@ namespace JwtAuthWebAPiProject.Repositories
             _appDbContext = appDbContext;
             _mapper = mapper;
         }
-        public async Task<Employee> Create(CreateEmployeeInputModel createEmployeeInputModel)
+        public async Task<Employee> CreateAsync(CreateEmployeeInputModel createEmployeeInputModel)
         {
             var employee = _mapper.Map<Employee>(createEmployeeInputModel);
             employee.CreatedDate = DateTime.Now;
@@ -34,7 +34,7 @@ namespace JwtAuthWebAPiProject.Repositories
         }
 
 
-        public async Task<Employee> Delete(int employeeId)
+        public async Task<Employee> DeleteAsync(int employeeId)
         {
             var employee = await _appDbContext.Employees
                    .FirstOrDefaultAsync(e=>e.Id==employeeId);
@@ -47,18 +47,18 @@ namespace JwtAuthWebAPiProject.Repositories
             return null;
         }
 
-        public async Task<List<Employee>> GetAll()
+        public async Task<List<Employee>> GetAllAsync()
         {
             return await _appDbContext.Employees.ToListAsync();
         }
 
-        public async Task<Employee> GetById(int id)
+        public async Task<Employee> GetByIdAsync(int id)
         {
             return await _appDbContext.Employees
                   .FirstOrDefaultAsync(e =>e.Id == id);
         }
 
-        public async Task<Employee> Update(UpdateEmployeeInputModel updateEmployeeInputModel)
+        public async Task<Employee> UpdateAsync(UpdateEmployeeInputModel updateEmployeeInputModel)
         {
             var employee = await _appDbContext.Employees
                 .FirstOrDefaultAsync(e =>e.Id == updateEmployeeInputModel.Id);

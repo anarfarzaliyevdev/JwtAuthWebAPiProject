@@ -32,7 +32,7 @@ namespace JwtAuthWebAPiProject.CustomAttributes
         {
             //var permissionName = _claim.Value;
             var permissionNames=_claim.Value.Split(',').ToList();
-            _memoryCache.TryGetValue("UserEmail",out string userEmail);
+            //_memoryCache.TryGetValue("UserEmail",out string userEmail);
             var permissions = _memoryCache.TryGetValue("Permissions", out List<Permisson> userPermissions);
 
             //var hasClaim = pers.Any(p=>p.Name== permissionName);

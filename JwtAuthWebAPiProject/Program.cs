@@ -1,6 +1,8 @@
 using JwtAuthWebAPiProject.Abstractions;
 using JwtAuthWebAPiProject.DbContexts;
+using JwtAuthWebAPiProject.Middlewares;
 using JwtAuthWebAPiProject.Repositories;
+using JwtAuthWebAPiProject.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -17,7 +19,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContext<AppDbContext>(options =>
              options.UseSqlServer(builder.Configuration.GetConnectionString("JwtAuthDBConnection")));
 builder.Services.AddScoped<IUserRepository, UserRepositroy>();
-builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddSwaggerGen();
@@ -50,6 +52,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseMiddleware<ErrorHandlerMiddleware>();
 app.MapControllers();
 
 app.Run();

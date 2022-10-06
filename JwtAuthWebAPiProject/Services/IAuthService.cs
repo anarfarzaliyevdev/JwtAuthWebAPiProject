@@ -1,11 +1,12 @@
 ﻿using JwtAuthWebAPiProject.Models;
 
-namespace JwtAuthWebAPiProject.Abstractions
+namespace JwtAuthWebAPiProject.Services
 {
-    public interface IAuthRepository
+    public interface IAuthService
     {
-        
+
         bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt);
         string CreateToken(User user);
+        void CreatePaswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt);
     }
 }

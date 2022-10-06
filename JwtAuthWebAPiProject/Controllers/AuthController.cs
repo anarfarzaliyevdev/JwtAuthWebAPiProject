@@ -1,6 +1,7 @@
 ﻿using JwtAuthWebAPiProject.Abstractions;
 using JwtAuthWebAPiProject.DTOs;
 using JwtAuthWebAPiProject.Models;
+using JwtAuthWebAPiProject.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -12,10 +13,10 @@ namespace JwtAuthWebAPiProject.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
-        private readonly IAuthRepository _authRepository;
+        private readonly IAuthService _authRepository;
         private readonly IMemoryCache _memoryCache;
 
-        public AuthController(IUserRepository userRepository,IAuthRepository authRepository,IMemoryCache memoryCache)
+        public AuthController(IUserRepository userRepository,IAuthService authRepository,IMemoryCache memoryCache)
         {
             _userRepository = userRepository;
             _authRepository = authRepository;
@@ -28,17 +29,17 @@ namespace JwtAuthWebAPiProject.Controllers
           
             if(user == null)
             {
-                return BadRequest("User not exist");
+                return NotFound("Username or password is not correct");
             }
             if (!_authRepository.VerifyPasswordHash(loginInputModel.Password, user.PasswordHash, user.PasswordSalt))
             {
-                return BadRequest("Bad request");
+                return NotFound("Username or password is not correct");
             }
 
             string token = _authRepository.CreateToken(user);
             
-            _memoryCache.Set("UserEmail", user.Email);
-            _memoryCache.Set("Permissions", user.Permissions);
+            //_memoryCache.Set("UserEmail", user.Email);
+            //_memoryCache.Set("Permissions", user.Permissions);
             return Ok(token);
         }
     }

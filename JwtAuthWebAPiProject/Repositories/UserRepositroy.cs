@@ -2,7 +2,9 @@
 using JwtAuthWebAPiProject.Abstractions;
 using JwtAuthWebAPiProject.DbContexts;
 using JwtAuthWebAPiProject.DTOs;
+using JwtAuthWebAPiProject.Extensions;
 using JwtAuthWebAPiProject.Models;
+using JwtAuthWebAPiProject.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 
@@ -12,11 +14,13 @@ namespace JwtAuthWebAPiProject.Repositories
     {
         private readonly AppDbContext _appDbContext;
         private readonly IMapper _mapper;
+        private readonly IAuthService _authService;
 
-        public UserRepositroy(AppDbContext appDbContext, IMapper mapper)
+        public UserRepositroy(AppDbContext appDbContext, IMapper mapper,IAuthService authService)
         {
             _appDbContext = appDbContext;
             _mapper = mapper;
+            _authService = authService;
         }
 
 
@@ -25,21 +29,17 @@ namespace JwtAuthWebAPiProject.Repositories
             var user = _mapper.Map<User>(createUserInputModel);
             user.CreatedDate = DateTime.Now;
             user.IsActive = true;
-            var newUser = (await _appDbContext.Users.AddAsync(user)).Entity;
-            CreatePaswordHash(createUserInputModel.Password, out byte[] passwordHash, out byte[] passwordSalt);
+
+            _authService.CreatePaswordHash(createUserInputModel.Password, out byte[] passwordHash, out byte[] passwordSalt);
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
+            var newUser = (await _appDbContext.Users.AddAsync(user)).Entity;
+            
+         
             await _appDbContext.SaveChangesAsync();
             return newUser;
         }
-        public void CreatePaswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-        {
-            using (var hmac = new HMACSHA512())
-            {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-            }
-        }
+        
 
         public async Task<User> GetUser(string email)
         {

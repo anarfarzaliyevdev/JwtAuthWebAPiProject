@@ -1,5 +1,4 @@
-﻿using JwtAuthWebAPiProject.Abstractions;
-using JwtAuthWebAPiProject.Models;
+﻿using JwtAuthWebAPiProject.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -7,13 +6,13 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace JwtAuthWebAPiProject.Repositories
+namespace JwtAuthWebAPiProject.Services
 {
-    public class AuthRepository : IAuthRepository
+    public class AuthService : IAuthService
     {
         private readonly IConfiguration _configuration;
 
-        public AuthRepository(IConfiguration configuration)
+        public AuthService(IConfiguration configuration)
         {
             _configuration = configuration;
         }
@@ -21,12 +20,12 @@ namespace JwtAuthWebAPiProject.Repositories
         {
             using (var hmac = new HMACSHA512(passwordSalt))
             {
-                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+                var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
                 return computedHash.SequenceEqual(passwordHash);
             }
         }
-            public string CreateToken(User user)
-            {
+        public string CreateToken(User user)
+        {
             var claims = new[] {
                         new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]),
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
@@ -45,6 +44,14 @@ namespace JwtAuthWebAPiProject.Repositories
                 signingCredentials: signIn);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+        public  void CreatePaswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        {
+            using (var hmac = new HMACSHA512())
+            {
+                passwordSalt = hmac.Key;
+                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             }
+        }
     }
 }
