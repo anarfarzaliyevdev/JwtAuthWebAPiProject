@@ -4,7 +4,7 @@ namespace JwtAuthWebAPiProject.DTOs
 {
     public class LoginInputModel
     {
-        [Required]
+        [Required(ErrorMessage ="Email field is required")]
         public string Email { get; set; }
         [Required]
         public string Password { get; set; }
