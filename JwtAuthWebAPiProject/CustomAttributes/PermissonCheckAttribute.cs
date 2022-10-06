@@ -3,15 +3,16 @@ using JwtAuthWebAPiProject.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
+using System.Collections.Generic;
 using System.Security.Claims;
 
 namespace JwtAuthWebAPiProject.CustomAttributes
 {
     public class PermissonCheckAttribute : TypeFilterAttribute
     {
-        public PermissonCheckAttribute(string claimType, string claimValue) : base(typeof(PermissionCheckFilter))
+        public PermissonCheckAttribute(string claimValue) : base(typeof(PermissionCheckFilter))
         {
-            Arguments = new object[] { new Claim(claimType, claimValue) };
+            Arguments = new object[] { new Claim("",claimValue) };
         }
         
     }
@@ -20,22 +21,33 @@ namespace JwtAuthWebAPiProject.CustomAttributes
         readonly Claim _claim;
         private readonly IUserRepository _userRepository;
         private readonly IMemoryCache _memoryCache;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        
 
-        public PermissionCheckFilter(Claim claim,IUserRepository userRepository,IMemoryCache memoryCache)
+        public PermissionCheckFilter(Claim claim,IUserRepository userRepository,IMemoryCache memoryCache,IHttpContextAccessor httpContextAccessor)
         {
             _claim = claim;
            _userRepository = userRepository;
             _memoryCache = memoryCache;
+            _httpContextAccessor = httpContextAccessor;
+            
         }
 
-        public void OnAuthorization(AuthorizationFilterContext context)
+        public async void OnAuthorization(AuthorizationFilterContext context)
         {
-            //var permissionName = _claim.Value;
-            var permissionNames=_claim.Value.Split(',').ToList();
-            //_memoryCache.TryGetValue("UserEmail",out string userEmail);
-            var permissions = _memoryCache.TryGetValue("Permissions", out List<Permisson> userPermissions);
+            
+            //get user from context
+            var userEmail = context.HttpContext.User.Claims.FirstOrDefault(c=>c.Type=="Email").Value;
+            // check is cahced or not, if not then cache
+            var isUserPermissionsCached = _memoryCache.TryGetValue(userEmail, out List<Permisson> userPermissions);
+            if (!isUserPermissionsCached)
+            {
+                var userPermissionsFromDb = _userRepository.GetUser(userEmail).Result.Permissions;
+                _memoryCache.Set(userEmail, userPermissionsFromDb);
+                userPermissions = userPermissionsFromDb;
+            }
 
-            //var hasClaim = pers.Any(p=>p.Name== permissionName);
+            var permissionNames=_claim.Value.Split(',').ToList();
             var hasClaim = false;
             if (permissionNames != null)
             {

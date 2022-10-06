@@ -42,7 +42,7 @@ namespace JwtAuthWebAPiProject.Controllers
                 return Ok(result);
            
         }
-        [PermissonCheck("Permission", "Create")]
+        [PermissonCheck("CreateEmployee")]
         [HttpPost]
         public async Task<ActionResult<Employee>> CreateEmployee(CreateEmployeeInputModel createEmployeeInputModel)
         {
@@ -59,7 +59,7 @@ namespace JwtAuthWebAPiProject.Controllers
             
         }
 
-        [PermissonCheck("Permission", "Update")]
+        [PermissonCheck("UpdateEmployee")]
         [HttpPut]
         public async Task<ActionResult<Employee>> UpdateEmployee(UpdateEmployeeInputModel updateEmployeeInputModel)
         {
@@ -73,7 +73,7 @@ namespace JwtAuthWebAPiProject.Controllers
                 return await _employeeRepository.UpdateAsync(updateEmployeeInputModel);
             
         }
-        [PermissonCheck("Permission", "Delete")]
+        [PermissonCheck("DeleteEmployee")]
         [HttpDelete("{id:int}")]
         public async Task<ActionResult<Employee>> DeleteEmployee(int id)
         {
