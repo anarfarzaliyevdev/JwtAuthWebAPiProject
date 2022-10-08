@@ -1,5 +1,6 @@
 ﻿using JwtAuthWebAPiProject.DTOs;
 using JwtAuthWebAPiProject.Models;
+using System.Security.Claims;
 
 namespace JwtAuthWebAPiProject.Services
 {
@@ -9,5 +10,7 @@ namespace JwtAuthWebAPiProject.Services
         bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt);
         TokenOutputModel CreateToken(User user);
         void CreatePaswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt);
+        string GenerateRefreshToken();
+        ClaimsPrincipal? GetPrincipalFromExpiredToken(string? token);
     }
 }

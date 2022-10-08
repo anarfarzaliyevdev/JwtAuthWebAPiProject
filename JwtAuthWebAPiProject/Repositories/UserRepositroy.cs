@@ -52,5 +52,22 @@ namespace JwtAuthWebAPiProject.Repositories
 
             return await _appDbContext.Users.Include(u => u.Permissions).ToListAsync();
         }
+
+        public async Task<User> UpdateUserAsync(User user)
+        {
+            var existingUser = await _appDbContext.Users
+               .FirstOrDefaultAsync(e => e.Id == user.Id);
+            if (user != null)
+            {
+
+                existingUser.RefreshToken=user.RefreshToken;
+                existingUser.RefreshTokenExpireDate = user.RefreshTokenExpireDate;
+           
+                await _appDbContext.SaveChangesAsync();
+
+                return existingUser;
+            }
+            return null;
+        }
     }
 }

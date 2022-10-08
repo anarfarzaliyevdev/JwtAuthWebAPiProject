@@ -9,7 +9,7 @@ namespace JwtAuthWebAPiProject.Mapper
         public UserProfile()
         {
             CreateMap<User, CreateUserInputModel>().ReverseMap();
-            
+            CreateMap<User, User>().ReverseMap();
         }
     }
 }

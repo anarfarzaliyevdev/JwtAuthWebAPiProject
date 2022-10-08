@@ -25,7 +25,7 @@ namespace JwtAuthWebAPiProject.Controllers
         {
 
 
-            return Ok(await _userRepository.GetUsers());
+            return Ok(await _userRepository.GetUsersAsync());
         }
 
         [HttpPost]
