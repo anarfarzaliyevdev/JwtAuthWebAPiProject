@@ -25,7 +25,7 @@ namespace JwtAuthWebAPiProject.Controllers
         public async Task<ActionResult<UserOutputModel>> GetUsers()
         {
             var users = await _userRepository.GetAllAsync();
-            //create employee output model to view
+            //create user output model to view
             var userOutputModel = new UserOutputModel();
             var userOutputModels = users.Select(u => _mapper.Map(u, userOutputModel)).ToList();
             _mapper.Map(users, userOutputModels);

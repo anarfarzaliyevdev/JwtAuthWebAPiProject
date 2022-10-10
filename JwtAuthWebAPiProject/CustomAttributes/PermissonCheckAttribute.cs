@@ -47,13 +47,14 @@ namespace JwtAuthWebAPiProject.CustomAttributes
                 _memoryCache.Set(userEmail, userPermissionsFromDb);
                 userPermissions = userPermissionsFromDb;
             }
-
+            //split permissions if it is multiple
             var permissionNames=_claim.Value.Split(',').ToList();
             var hasClaim = false;
             if (permissionNames != null)
             {
                 foreach (var per in permissionNames)
                 {
+                    //check if user has at least one permission
                     hasClaim = userPermissions.Any(p => p.Name == per);
                     if (hasClaim)
                         break;
