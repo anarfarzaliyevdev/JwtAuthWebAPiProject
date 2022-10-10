@@ -10,64 +10,21 @@ using System.Security.Cryptography;
 
 namespace JwtAuthWebAPiProject.Repositories
 {
-    public class UserRepositroy : IUserRepository
+    public class UserRepositroy : GenericRepository<User>, IUserRepository
     {
         private readonly AppDbContext _appDbContext;
-        private readonly IMapper _mapper;
-        private readonly IAuthService _authService;
+    
 
-        public UserRepositroy(AppDbContext appDbContext, IMapper mapper,IAuthService authService)
+        public UserRepositroy(AppDbContext appDbContext)
+            :base(appDbContext)
         {
             _appDbContext = appDbContext;
-            _mapper = mapper;
-            _authService = authService;
-        }
-
-
-        public async Task<User> CreateAsync(CreateUserInputModel createUserInputModel)
-        {
-            var user = _mapper.Map<User>(createUserInputModel);
-            user.CreatedDate = DateTime.Now;
-            user.IsActive = true;
-
-            _authService.CreatePaswordHash(createUserInputModel.Password, out byte[] passwordHash, out byte[] passwordSalt);
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
-            var newUser = (await _appDbContext.Users.AddAsync(user)).Entity;
-            
          
-            await _appDbContext.SaveChangesAsync();
-            return newUser;
-        }
-        
-
-        public async Task<User> GetUserAsync(string email)
-        {
-            var user=await _appDbContext.Users.Include(u => u.Permissions).FirstOrDefaultAsync(u=>u.Email==email);
-            return user;
         }
 
-        public async Task<List<User>> GetUsersAsync()
+        public async Task<User> GetUserByEmailAsync(string email)
         {
-
-            return await _appDbContext.Users.Include(u => u.Permissions).ToListAsync();
-        }
-
-        public async Task<User> UpdateUserAsync(User user)
-        {
-            var existingUser = await _appDbContext.Users
-               .FirstOrDefaultAsync(e => e.Id == user.Id);
-            if (user != null)
-            {
-
-                existingUser.RefreshToken=user.RefreshToken;
-                existingUser.RefreshTokenExpireDate = user.RefreshTokenExpireDate;
-           
-                await _appDbContext.SaveChangesAsync();
-
-                return existingUser;
-            }
-            return null;
+           return await _appDbContext.Users.Include(u => u.Permissions).FirstOrDefaultAsync(u => u.Email == email);
         }
     }
 }

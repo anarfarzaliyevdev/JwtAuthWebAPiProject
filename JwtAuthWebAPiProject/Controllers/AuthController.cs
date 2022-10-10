@@ -28,7 +28,7 @@ namespace JwtAuthWebAPiProject.Controllers
         [HttpPost]
         public async Task<ActionResult<TokenOutputModel>> Login(LoginInputModel loginInputModel)
         {
-            var user =await _userRepository.GetUserAsync(loginInputModel.Email);
+            var user =await _userRepository.GetUserByEmailAsync(loginInputModel.Email);
           
             if(user == null)
             {
@@ -42,7 +42,7 @@ namespace JwtAuthWebAPiProject.Controllers
             TokenOutputModel tokenOutputModel = _authService.CreateToken(user);
             user.RefreshToken = tokenOutputModel.RefreshToken;
             user.RefreshTokenExpireDate = tokenOutputModel.RefreshTokenExpireDate;
-            await _userRepository.UpdateUserAsync(user);
+            await _userRepository.UpdateAsync(user);
             _memoryCache.Set("UserEmail", user.Email);
             //_memoryCache.Set("Permissions", user.Permissions);
             return Ok(tokenOutputModel);
@@ -69,7 +69,7 @@ namespace JwtAuthWebAPiProject.Controllers
              _memoryCache.TryGetValue("UserEmail", out string username);
 
 
-            var user = await _userRepository.GetUserAsync(username);
+            var user = await _userRepository.GetUserByEmailAsync(username);
 
             if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpireDate<= DateTime.Now)
             {
@@ -80,7 +80,7 @@ namespace JwtAuthWebAPiProject.Controllers
             user.RefreshToken = newTokenOutputModel.RefreshToken;
             user.RefreshTokenExpireDate = newTokenOutputModel.RefreshTokenExpireDate;
 
-            await _userRepository.UpdateUserAsync(user);
+            await _userRepository.UpdateAsync(user);
 
             return Ok(newTokenOutputModel);
            

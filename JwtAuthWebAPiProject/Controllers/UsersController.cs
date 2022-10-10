@@ -25,19 +25,21 @@ namespace JwtAuthWebAPiProject.Controllers
         {
 
 
-            return Ok(await _userRepository.GetUsersAsync());
+            return Ok(await _userRepository.GetAllAsync());
         }
 
         [HttpPost]
         public async Task<ActionResult<User>> Create(CreateUserInputModel createUserInputModel)
         {
 
-            var existingUser = await _userRepository.GetUserAsync(createUserInputModel.Email);
+            var existingUser = await _userRepository.GetUserByEmailAsync(createUserInputModel.Email);
             if(existingUser != null)
             {
                 return BadRequest($"User with this email already exists ({createUserInputModel.Email}) ");
             }
-            return Ok(await _userRepository.CreateAsync(createUserInputModel));
+            User user=new User();
+            _mapper.Map(createUserInputModel, user);
+            return Ok(await _userRepository.CreateAsync(user));
         }
         
 

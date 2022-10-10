@@ -3,13 +3,7 @@ using JwtAuthWebAPiProject.Models;
 
 namespace JwtAuthWebAPiProject.Abstractions
 {
-    public interface IEmployeeRepository
+    public interface IEmployeeRepository:IGenericRepository<Employee>
     {
-        Task<List<Employee>> GetAllAsync();
-        Task<Employee> GetByIdAsync(int id);
-        Task<Employee> CreateAsync(CreateEmployeeInputModel createEmployeeInputModel);
-        Task<Employee> UpdateAsync(UpdateEmployeeInputModel employee);
-        Task<Employee> DeleteAsync(int employeeId);
-        
     }
 }

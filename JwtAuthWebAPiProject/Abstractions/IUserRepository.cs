@@ -3,11 +3,10 @@ using JwtAuthWebAPiProject.Models;
 
 namespace JwtAuthWebAPiProject.Abstractions
 {
-    public interface IUserRepository
+    public interface IUserRepository:IGenericRepository<User>
     {
-        Task<User> CreateAsync(CreateUserInputModel createUserInputModel);
-        Task<User> GetUserAsync(string email);
-        Task<List<User>> GetUsersAsync();
-        Task<User> UpdateUserAsync(User user);
+     
+        Task<User> GetUserByEmailAsync(string email);
+      
     }
 }

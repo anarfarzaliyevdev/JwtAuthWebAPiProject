@@ -43,7 +43,7 @@ namespace JwtAuthWebAPiProject.CustomAttributes
             var isUserPermissionsCached = _memoryCache.TryGetValue(userEmail, out List<Permisson> userPermissions);
             if (!isUserPermissionsCached)
             {
-                var userPermissionsFromDb = _userRepository.GetUserAsync(userEmail).Result.Permissions;
+                var userPermissionsFromDb = _userRepository.GetUserByEmailAsync(userEmail).Result.Permissions;
                 _memoryCache.Set(userEmail, userPermissionsFromDb);
                 userPermissions = userPermissionsFromDb;
             }
