@@ -18,8 +18,8 @@ namespace JwtAuthWebAPiProject.Repositories
         {
             if (entity != null)
             {
-               await  _dbSet.AddAsync(entity);
-               await _appDbContext.SaveChangesAsync();
+                await _dbSet.AddAsync(entity);
+                await _appDbContext.SaveChangesAsync();
                 return entity;
             }
             return null;
@@ -27,14 +27,14 @@ namespace JwtAuthWebAPiProject.Repositories
 
         public async Task<T> DeleteAsync(int entityId)
         {
-            var entity =await _dbSet.FindAsync(entityId);
+            var entity = await _dbSet.FindAsync(entityId);
             if (_appDbContext.Entry(entity).State == EntityState.Detached)
             {
                 _dbSet.Attach(entity);
             }
 
             TrySetProperty(entity, "IsDeleted", true);
-            var result =await _appDbContext.SaveChangesAsync();
+            var result = await _appDbContext.SaveChangesAsync();
             if (result > 0)
             {
                 return entity;
@@ -55,8 +55,7 @@ namespace JwtAuthWebAPiProject.Repositories
 
         public async Task<bool> UpdateAsync(T entity)
         {
-           
-                _dbSet.Attach(entity);
+            _dbSet.Attach(entity);
             _appDbContext.Entry(entity).State = EntityState.Modified;
             var result = await _appDbContext.SaveChangesAsync();
             if (result > 0)

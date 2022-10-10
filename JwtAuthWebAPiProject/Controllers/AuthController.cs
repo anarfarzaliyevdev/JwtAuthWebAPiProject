@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace JwtAuthWebAPiProject.Controllers
 {
@@ -64,12 +65,8 @@ namespace JwtAuthWebAPiProject.Controllers
             {
                 return BadRequest("Invalid access token or refresh token");
             }
-
-
-             _memoryCache.TryGetValue("UserEmail", out string username);
-
-
-            var user = await _userRepository.GetUserByEmailAsync(username);
+            // get user email from claimTypes and found user
+            var user = await _userRepository.GetUserByEmailAsync(principal.Claims.FirstOrDefault(c=>c.Type==ClaimTypes.Email).Value);
 
             if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpireDate<= DateTime.Now)
             {

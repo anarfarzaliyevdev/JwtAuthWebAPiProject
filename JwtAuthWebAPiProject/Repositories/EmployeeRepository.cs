@@ -11,14 +11,11 @@ namespace JwtAuthWebAPiProject.Repositories
     public class EmployeeRepository : GenericRepository<Employee>, IEmployeeRepository
     {
         private readonly AppDbContext _appDbContext;
-      
-
         public EmployeeRepository(AppDbContext appDbContext)
               : base(appDbContext)
         {
             _appDbContext = appDbContext;
-           
         }
-       
+
     }
 }

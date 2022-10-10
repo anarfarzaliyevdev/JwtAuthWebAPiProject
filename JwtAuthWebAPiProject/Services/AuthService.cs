@@ -13,12 +13,11 @@ namespace JwtAuthWebAPiProject.Services
     public class AuthService : IAuthService
     {
         private readonly IConfiguration _configuration;
-   
+
 
         public AuthService(IConfiguration configuration)
         {
             _configuration = configuration;
-           
         }
         public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
         {
@@ -34,13 +33,13 @@ namespace JwtAuthWebAPiProject.Services
                         new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]),
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                         new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
-                        new Claim("Id", user.Id.ToString()),
-                        new Claim("Email", user.Email),
+                        new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                         new Claim("Id", user.Id.ToString()),
                     };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        
+
             var token = new JwtSecurityToken(
                 _configuration["Jwt:Issuer"],
                 _configuration["Jwt:Audience"],
@@ -49,24 +48,21 @@ namespace JwtAuthWebAPiProject.Services
                 signingCredentials: signIn);
             TokenOutputModel tokenOutputModel = new TokenOutputModel();
             tokenOutputModel.Token = new JwtSecurityTokenHandler().WriteToken(token);
-            tokenOutputModel.TokenExpireDate= token.ValidTo;
+            tokenOutputModel.TokenExpireDate = token.ValidTo;
             tokenOutputModel.UserId = user.Id;
             //generate refresh token
             var refreshToken = GenerateRefreshToken();
-          
+
             tokenOutputModel.RefreshToken = refreshToken;
-         
-            int.TryParse(_configuration["JWT:RefreshTokenValidityInDays"], out int refreshTokenValidityInDays);
+
+            int.TryParse(_configuration["Jwt:RefreshTokenValidityInDays"], out int refreshTokenValidityInDays);
             DateTime refreshTokenExDate = DateTime.Now.AddDays(refreshTokenValidityInDays);
             tokenOutputModel.RefreshTokenExpireDate = refreshTokenExDate;
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpireDate = refreshTokenExDate;
-       
-           
-
             return tokenOutputModel;
         }
-        public  void CreatePaswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        public void CreatePaswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             using (var hmac = new HMACSHA512())
             {
@@ -74,7 +70,7 @@ namespace JwtAuthWebAPiProject.Services
                 passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
             }
         }
-        public  string GenerateRefreshToken()
+        public string GenerateRefreshToken()
         {
             var randomNumber = new byte[64];
             using var rng = RandomNumberGenerator.Create();
@@ -85,11 +81,13 @@ namespace JwtAuthWebAPiProject.Services
         {
             var tokenValidationParameters = new TokenValidationParameters
             {
-                ValidateAudience = false,
-                ValidateIssuer = false,
+                ValidateAudience = true,
+                ValidateIssuer = true,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"])),
-                ValidateLifetime = false
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])),
+                ValidateLifetime = false,
+                ValidIssuer = _configuration["Jwt:Issuer"],
+                ValidAudience = _configuration["Jwt:Audience"]
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -98,7 +96,6 @@ namespace JwtAuthWebAPiProject.Services
                 throw new SecurityTokenException("Invalid token");
 
             return principal;
-
         }
     }
 }

@@ -13,13 +13,10 @@ namespace JwtAuthWebAPiProject.Repositories
     public class UserRepositroy : GenericRepository<User>, IUserRepository
     {
         private readonly AppDbContext _appDbContext;
-    
-
         public UserRepositroy(AppDbContext appDbContext)
             :base(appDbContext)
         {
             _appDbContext = appDbContext;
-         
         }
 
         public async Task<User> GetUserByEmailAsync(string email)

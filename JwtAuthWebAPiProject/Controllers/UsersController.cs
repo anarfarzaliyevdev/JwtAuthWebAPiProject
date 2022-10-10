@@ -14,7 +14,7 @@ namespace JwtAuthWebAPiProject.Controllers
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
 
-        public UsersController(IUserRepository userRepository,IMapper mapper)
+        public UsersController(IUserRepository userRepository, IMapper mapper)
         {
             _userRepository = userRepository;
             _mapper = mapper;
@@ -23,25 +23,22 @@ namespace JwtAuthWebAPiProject.Controllers
         [HttpGet]
         public async Task<ActionResult<User>> GetUsers()
         {
-
-
             return Ok(await _userRepository.GetAllAsync());
         }
 
         [HttpPost]
         public async Task<ActionResult<User>> Create(CreateUserInputModel createUserInputModel)
         {
-
             var existingUser = await _userRepository.GetUserByEmailAsync(createUserInputModel.Email);
-            if(existingUser != null)
+            if (existingUser != null)
             {
                 return BadRequest($"User with this email already exists ({createUserInputModel.Email}) ");
             }
-            User user=new User();
+            User user = new User();
             _mapper.Map(createUserInputModel, user);
             return Ok(await _userRepository.CreateAsync(user));
         }
-        
+
 
     }
 }

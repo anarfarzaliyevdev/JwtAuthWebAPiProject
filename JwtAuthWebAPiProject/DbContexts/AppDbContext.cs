@@ -7,10 +7,10 @@ using System.Linq.Expressions;
 
 namespace JwtAuthWebAPiProject.DbContexts
 {
-    public class AppDbContext:DbContext
+    public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options)
-: base(options)
+            : base(options)
         {
         }
         public DbSet<User> Users { get; set; }
@@ -21,18 +21,16 @@ namespace JwtAuthWebAPiProject.DbContexts
         {
             base.OnModelCreating(modelBuilder);
             ConfigureGlobalFilters<Employee>(modelBuilder);
-            
         }
         protected void ConfigureGlobalFilters<TEntity>(ModelBuilder modelBuilder) where TEntity : class
         {
             if (ShouldFilterEntity<TEntity>())
             {
-                var filterEx=CreateFilterExpression<TEntity>();
-                if(filterEx!=null)
+                var filterEx = CreateFilterExpression<TEntity>();
+                if (filterEx != null)
                 {
                     modelBuilder.Entity<TEntity>().HasQueryFilter(filterEx);
                 }
-
             }
         }
         protected virtual bool ShouldFilterEntity<TEntity>() where TEntity : class
@@ -43,11 +41,10 @@ namespace JwtAuthWebAPiProject.DbContexts
             }
             return false;
         }
-        protected virtual Expression<Func<TEntity,bool>> CreateFilterExpression<TEntity>() where TEntity : class
+        protected virtual Expression<Func<TEntity, bool>> CreateFilterExpression<TEntity>() where TEntity : class
         {
             Expression<Func<TEntity, bool>> softDeleteFilter = e => !((ISoftDelete)e).IsDeleted;
             return softDeleteFilter;
-            
         }
     }
 }
