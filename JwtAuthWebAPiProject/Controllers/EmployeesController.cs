@@ -25,25 +25,33 @@ namespace JwtAuthWebAPiProject.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Employee>>> GetAll()
+        public async Task<ActionResult<List<EmployeeOutputModel>>> GetAll()
         {
-            return Ok(await _employeeRepository.GetAllAsync());
+            var users = await _employeeRepository.GetAllAsync();
+            //create employee output model to view
+            var employeeOutputModel = new EmployeeOutputModel();
+            var employeeOutputModels = users.Select(u=>_mapper.Map(u, employeeOutputModel)).ToList();
+            _mapper.Map(users, employeeOutputModels);
+            return Ok(employeeOutputModels);
         }
 
         [HttpGet("{id:int}")]
         public async Task<ActionResult<Employee>> GetEmployee(int id)
         {
-            var result = await _employeeRepository.GetByIdAsync(id);
-            if (result == null)
+            var user = await _employeeRepository.GetByIdAsync(id);
+            if (user == null)
             {
                 return NotFound(null);
             }
+            var employeeOutputModel = new EmployeeOutputModel();
+            var result = _mapper.Map(user, employeeOutputModel);
+           
             return Ok(result);
         }
 
         [PermissonCheck("CreateEmployee")]
         [HttpPost]
-        public async Task<ActionResult<Employee>> CreateEmployee(CreateEmployeeInputModel createEmployeeInputModel)
+        public async Task<ActionResult<EmployeeOutputModel>> CreateEmployee(CreateEmployeeInputModel createEmployeeInputModel)
         {
             if (createEmployeeInputModel == null)
             {
@@ -52,13 +60,15 @@ namespace JwtAuthWebAPiProject.Controllers
             var employee = new Employee();
             _mapper.Map(createEmployeeInputModel, employee);
             var newEmployee = await _employeeRepository.CreateAsync(employee);
-
-            return CreatedAtAction(nameof(GetEmployee), new { id = newEmployee.Id }, newEmployee);
+            //create employee output model to view
+            var employeeOutputModel =new EmployeeOutputModel();
+            _mapper.Map(newEmployee, employeeOutputModel);
+            return CreatedAtAction(nameof(GetEmployee), new { id = newEmployee.Id }, employeeOutputModel);
         }
 
         [PermissonCheck("UpdateEmployee")]
         [HttpPut]
-        public async Task<ActionResult<Employee>> UpdateEmployee(UpdateEmployeeInputModel updateEmployeeInputModel)
+        public async Task<ActionResult<EmployeeOutputModel>> UpdateEmployee(UpdateEmployeeInputModel updateEmployeeInputModel)
         {
             if (updateEmployeeInputModel == null)
             {
@@ -67,20 +77,27 @@ namespace JwtAuthWebAPiProject.Controllers
             var employee = new Employee();
             _mapper.Map(updateEmployeeInputModel, employee);
             await _employeeRepository.UpdateAsync(employee);
-
-            return await _employeeRepository.GetByIdAsync(employee.Id);
+            var updatedEmployee= await _employeeRepository.GetByIdAsync(employee.Id);
+            //create employee output model to view
+            var employeeOutputModel = new EmployeeOutputModel();
+            _mapper.Map(updatedEmployee, employeeOutputModel);
+            return employeeOutputModel;
         }
 
         [PermissonCheck("DeleteEmployee")]
         [HttpDelete("{id:int}")]
-        public async Task<ActionResult<Employee>> DeleteEmployee(int id)
+        public async Task<ActionResult<EmployeeOutputModel>> DeleteEmployee(int id)
         {
             var employee = await _employeeRepository.GetByIdAsync(id);
             if (employee == null)
             {
                 return NotFound($"Employee with {id} not found");
             }
-            return Ok(await _employeeRepository.DeleteAsync(id));
+            var deletedEmployee = await _employeeRepository.DeleteAsync(id);
+            //create employee output model to view
+            var employeeOutputModel = new EmployeeOutputModel();
+            _mapper.Map(deletedEmployee, employeeOutputModel);
+            return Ok(employeeOutputModel);
         }
     }
 }

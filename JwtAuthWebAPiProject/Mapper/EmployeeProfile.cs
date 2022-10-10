@@ -10,6 +10,8 @@ namespace JwtAuthWebAPiProject.Mapper
         {
             CreateMap<Employee,CreateEmployeeInputModel>().ReverseMap();
             CreateMap<Employee, UpdateEmployeeInputModel>().ReverseMap();
+            CreateMap<Employee, EmployeeOutputModel>().ReverseMap();
+    
         }
     }
 }

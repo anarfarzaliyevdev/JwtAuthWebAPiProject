@@ -38,7 +38,7 @@ namespace JwtAuthWebAPiProject.CustomAttributes
         {
             
             //get user from context
-            var userEmail = context.HttpContext.User.Claims.FirstOrDefault(c=>c.Type=="Email").Value;
+            var userEmail = context.HttpContext.User.Claims.FirstOrDefault(c=>c.Type==ClaimTypes.Email).Value;
             // check is cahced or not, if not then cache
             var isUserPermissionsCached = _memoryCache.TryGetValue(userEmail, out List<Permisson> userPermissions);
             if (!isUserPermissionsCached)

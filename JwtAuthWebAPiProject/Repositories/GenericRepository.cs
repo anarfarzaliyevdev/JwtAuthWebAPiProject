@@ -18,7 +18,7 @@ namespace JwtAuthWebAPiProject.Repositories
         {
             if (entity != null)
             {
-                await _dbSet.AddAsync(entity);
+                 await _dbSet.AddAsync(entity);
                 await _appDbContext.SaveChangesAsync();
                 return entity;
             }
