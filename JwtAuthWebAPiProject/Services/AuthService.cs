@@ -30,11 +30,10 @@ namespace JwtAuthWebAPiProject.Services
         public TokenOutputModel CreateToken(User user)
         {
             var claims = new[] {
-                        new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]),
+                        new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                         new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
-                        new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                         new Claim("Id", user.Id.ToString()),
+                        new Claim(JwtRegisteredClaimNames.Email, user.Email)
                     };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));

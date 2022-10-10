@@ -44,8 +44,7 @@ namespace JwtAuthWebAPiProject.Controllers
             user.RefreshToken = tokenOutputModel.RefreshToken;
             user.RefreshTokenExpireDate = tokenOutputModel.RefreshTokenExpireDate;
             await _userRepository.UpdateAsync(user);
-            _memoryCache.Set("UserEmail", user.Email);
-            //_memoryCache.Set("Permissions", user.Permissions);
+          
             return Ok(tokenOutputModel);
         }
         [HttpPost]
